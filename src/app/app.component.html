@@ -1,0 +1,29 @@
+<!--The content below is only a placeholder and can be replaced. -->
+
+  <h1>
+     {{ title }}
+  </h1>
+<div class="row">
+  <div class="col-sm-4">
+    <app-multiselect (parentUpdateCharts)="updateCharts($event)" selection="{{selection}}"></app-multiselect>
+  </div>
+</div>
+<app-chart *ngIf="chartData" [data]="chartData" chart_title="Dataverse Downloads By Month" chart_label_x="Month" chart_label_y="Downloads" chart_bar_color="#31a354"></app-chart>
+<app-chart *ngIf="chartData2" [data]="chartData2" chart_title="Size of Dataverses" chart_label_x="" chart_label_y="Size (GB)" chart_bar_color="#756bb1"></app-chart>
+<div class="row">
+  <div class="block"><app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chart_title="File Types"></app-piechart></div>
+  <div class="block"><app-piechart *ngIf="pieChartData" [data]="pieChartData" chart_title="Subject Categories"></app-piechart></div>
+</div>
+<app-chart *ngIf="chartData1" [data]="chartData1" chart_title="Number of Datasets by Dataverse" chart_label_x="" chart_label_y="Count" chart_bar_color="#3182BD"></app-chart>
+
+
+<app-report
+  (parentCreateChart)="createChart($event)"
+  (parentCreateChart1)="createChart1($event)"
+  (parentCreateChart2)="createChart2($event)"
+  (parentCreatePieChart)="createPieChart($event)"
+  (parentCreatePieChart2)="createPieChart2($event)"
+  (parentCreateDropdown)="createDropdown($event)"
+></app-report>
+
+
