@@ -10,7 +10,7 @@ import { ReportComponent } from './report/report.component';
 import { ChartComponent } from './chart/chart.component';
 import {MultiselectComponent} from './multiselect/multiselect.component';
 import { PiechartComponent } from './piechart/piechart.component';
-
+import { SumPipe } from './_pipes/sum.pipe';
 
 @NgModule({
   declarations: [
@@ -18,14 +18,15 @@ import { PiechartComponent } from './piechart/piechart.component';
     ReportComponent,
     ChartComponent,
     MultiselectComponent,
-    PiechartComponent
+    PiechartComponent,
+    SumPipe
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
     MultiselectDropdownModule,
-    AngularFontAwesomeModule
+    AngularFontAwesomeModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

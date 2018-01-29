@@ -58,7 +58,7 @@ export class MultiselectComponent implements OnInit {
     //labels
     this.myOptions=options;
   }
-  onChange() {
+  onChange(e) {
     this.parentUpdateCharts.emit( this.optionsModel );
   }
 }

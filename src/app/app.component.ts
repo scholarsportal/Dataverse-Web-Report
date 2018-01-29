@@ -9,11 +9,11 @@ import { MultiselectComponent } from './multiselect/multiselect.component';
 export class AppComponent implements OnInit{
   title = 'Dataverse Report';
   selection: any = [];
-  private chartData: Array<any>;
-  private chartData1: Array<any>;
-  private chartData2: Array<any>;
-  private pieChartData: Array<any>;
-  private pieChartData2: Array<any>;
+  chartData: Array<any>;
+  chartData1: Array<any>;
+  chartData2: Array<any>;
+  pieChartData: Array<any>;
+  pieChartData2: Array<any>;
   //
   @ViewChild(ReportComponent) reportComponent : ReportComponent;
   @ViewChild(MultiselectComponent) multiselectComponent : MultiselectComponent;
