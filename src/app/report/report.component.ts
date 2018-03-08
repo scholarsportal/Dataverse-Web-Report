@@ -14,12 +14,13 @@ export class ReportComponent implements OnInit {
   @Output() parentCreateDropdown: EventEmitter<any> = new EventEmitter<any>();
   @Output() parentCreatePieChart: EventEmitter<any> = new EventEmitter<any>();
   @Output() parentCreatePieChart2: EventEmitter<any> = new EventEmitter<any>();
+  @Output() parentChangeDateRange: EventEmitter<any> = new EventEmitter<string>();
 
   constructor(private http: HttpClient) { }
   dataverses: {id:number, name:string}[];
   csv_data: any[] = [];
   selection: any[] = [];
-  charts=[];
+  date_range:"";
   //
   file_type_lookup : any[] = [["zip","ZIP"], ["application/pdf","PDF"],["application/msword", "Word"],["application/vnd.ms-excel", "Excel"]];
 
@@ -68,6 +69,11 @@ export class ReportComponent implements OnInit {
     for ( let i = 0; i < allTextLines.length; i++) {
       // split
       let data = this.CSVtoArray(allTextLines[i]);
+      //failsafe
+      if(data==null){
+        data=allTextLines[i].split(",");
+      }
+
       if (data && typeof (data.length)!="undefined") {
         let tarr = [];
         for ( let j = 0; j < data.length; j++) {
@@ -85,10 +91,19 @@ export class ReportComponent implements OnInit {
     if(obj.dataverses.length==0) {
       for (var i = 1; i < obj.csv_data[id].length - 2; i++) {
         //make sure its published
-       // if(obj.csv_data[id][i][2]!="") {
+        if(obj.csv_data[id][i][2]!="") {
           obj.dataverses.push({id: i, name: obj.csv_data[id][i][0]});
-       // }
+        }
       }
+
+
+      obj.dataverses.sort(function s(a,b) {
+        if (a.name.toUpperCase() < b.name.toUpperCase())
+          return -1;
+        if (a.name.toUpperCase() > b.name.toUpperCase())
+          return 1;
+        return 0;
+      });
       //
       obj.parentCreateDropdown.emit(obj.dataverses);
     }
@@ -119,8 +134,13 @@ export class ReportComponent implements OnInit {
    var selection_names=[];
     if(this.selection){
       //need to get the selection name -- note the ids are off due to header
-      for(var i = 0; i < this.selection.length; i++){
-        selection_names.push(this.dataverses[this.selection[i]-1].name )
+        for(var i = 0; i < this.dataverses.length; i++) {
+          for(var j = 0; j < this.selection.length; j++){
+            if(this.dataverses[i].id==this.selection[j]){
+              selection_names.push(this.dataverses[i].name)
+            }
+
+        }
       }
     }
     return selection_names;
@@ -147,16 +167,23 @@ export class ReportComponent implements OnInit {
         }
       }
     }
-    //we just want a subset of the data
-   var chart_data = [];
-    var start=3;
-    for (let i = start; i < totals.length-1; i++) {
+    // we just want a subset of the data
+    var chart_data = [];
+    var start = 3;
+    for (let i = start; i < totals.length - 1; i++) {
     chart_data.push([
         this.csv_data[id][0][i],
         totals[i]
       ]);
+      // get the range
+      if (i === start) {
+        this.date_range = this.csv_data[id][0][i];
+      } else if (i === totals.length - 2 ) {
+        this.date_range += ' to ' + this.csv_data[id][0][i];
+        this.parentChangeDateRange.emit(this.date_range);
+      }
     }
-    totals=chart_data;
+    totals = chart_data;
     return totals;
   }
   private getTotals1(id,variable) {

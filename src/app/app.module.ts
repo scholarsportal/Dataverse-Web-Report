@@ -11,6 +11,7 @@ import { ChartComponent } from './chart/chart.component';
 import {MultiselectComponent} from './multiselect/multiselect.component';
 import { PiechartComponent } from './piechart/piechart.component';
 import { SumPipe } from './_pipes/sum.pipe';
+import { WindowRefService } from './window-ref.service';
 
 @NgModule({
   declarations: [
@@ -26,9 +27,9 @@ import { SumPipe } from './_pipes/sum.pipe';
     HttpClientModule,
     FormsModule,
     MultiselectDropdownModule,
-    AngularFontAwesomeModule,
+    AngularFontAwesomeModule
   ],
-  providers: [],
+  providers: [WindowRefService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

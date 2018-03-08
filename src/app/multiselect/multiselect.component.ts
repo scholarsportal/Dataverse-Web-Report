@@ -29,21 +29,24 @@ export class MultiselectComponent implements OnInit {
 
       }
     }
-    //set the default selection
+    // set the default selection
    this.optionsModel = selection;
    this.mySettings = {
       enableSearch: true,
       buttonClasses: 'btn btn-default btn-block',
       dynamicTitleMaxItems: 3,
       displayAllSelectedText: true,
-      showCheckAll:true,
-      showUncheckAll:true,
+      showCheckAll: false,
+      showUncheckAll: true,
       checkedStyle: 'fontawesome',
-     closeOnSelect:true
-    };
+     closeOnSelect: true,
+     selectionLimit : 1,
+     autoUnselect: true
+
+   };
      this.myTexts = {
       checkAll: 'Select all',
-      uncheckAll: 'Unselect all',
+      uncheckAll: 'Unselect ',
       checked: 'item selected',
       checkedPlural: 'items selected',
       searchPlaceholder: 'Find',
@@ -51,7 +54,7 @@ export class MultiselectComponent implements OnInit {
       searchNoRenderText: 'Type in search box to see results...',
       defaultTitle: 'Select Dataverse',
       allSelected: 'All selected',
-    };/**/
+    };
   }
 
   createMultiselectComponent(options){

@@ -34,3 +34,43 @@ text{
   width: 600px;
   display: inline-block;
 }
+.smaller{
+  font-size:16px;
+  float:right;
+
+}
+.mytooltip {
+  position:absolute;
+  text-align: center;
+  width: 200px;
+  height:auto;
+  background-color: rgb(233, 236, 238);
+  border-radius: 5px;
+  color: #787777;
+  padding: 6px 12px;
+  z-index:3;
+  pointer-events:none;
+}
+
+.mytooltip:after {
+  box-sizing: border-box;
+  display: inline;
+  width: 100%;
+  line-height: 1;
+  color: rgb(233, 236, 238);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+  margin: -3px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+.mytooltip span {
+  display: block;
+  text-align: center;
+  width: 100px;
+  height: auto;
+  margin: 5px auto;
+
+}

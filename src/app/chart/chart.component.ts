@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
+import { WindowRefService } from '../window-ref.service';
 
 @Component({
   selector: 'app-chart',
@@ -16,7 +17,7 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input() chart_bar_color: string;
 
 
-  private margin: any = { top: 20, bottom: 105, left: 60, right: 20};
+  private margin: any = { top: 55, bottom: 105, left: 60, right: 20};
   private chart: any;
   private width: number;
   private height: number;
@@ -26,8 +27,10 @@ export class ChartComponent implements OnInit, OnChanges {
   private xAxis: any;
   private yAxis: any;
   private element: any;
+  private details:any;
+  tooltip:any;
 
-  constructor() { }
+  constructor(private winref: WindowRefService) { }
 
   ngOnInit() {
     var details={
@@ -50,6 +53,8 @@ export class ChartComponent implements OnInit, OnChanges {
   }
 
   createChart(details) {
+
+    this.details=details;
     const element = this.chartContainer.nativeElement;
     this.element=element;
     this.width = element.offsetWidth - this.margin.left - this.margin.right;
@@ -62,6 +67,14 @@ export class ChartComponent implements OnInit, OnChanges {
     this.chart = svg.append('g')
       .attr('class', 'bars')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+    //
+    //
+   this.tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "mytooltip")
+      .style("display", "none");
+    //
+
 
     // define X & Y domains
     const xDomain = this.data.map(d => d[0]);
@@ -106,14 +119,17 @@ export class ChartComponent implements OnInit, OnChanges {
     //chart title
     this.chart.append("text")
       .attr("x", (this.width / 2))
+      .attr("class", "chart_title")
       .attr("y", 0 - (this.margin.top / 2)+5)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text(details.title);
 
   }
 
   updateChart() {
+    var obj =  this;
+    this.chart.select('.chart_title').text(this.chart_title);
+
     // update scales & axis
     this.xScale.domain(this.data.map(d => d[0]));
     this.yScale.domain([0, d3.max(this.data, d => d[1])]);
@@ -162,7 +178,30 @@ export class ChartComponent implements OnInit, OnChanges {
      .style("text-anchor", "end")
      .attr("dx", "-.8em")
      .attr("dy", ".15em")
-     .attr("transform", "rotate(-65)" )
+     .attr("transform", "rotate(-65)" );
+
+    d3.selectAll(".bar")
+      .on("mouseenter", function(d) {  //Mouse event
+        d3.select(this)
+          .transition()
+          .style('cursor', 'pointer')
+        obj.tooltip
+          .transition()  //Opacity transition when the tooltip appears
+          .duration(500)
+          .style("display", "block")  //The tooltip appears
+      })
+      .on("mouseleave", function() {
+        obj.tooltip.style("display", "none"); })
+      .on("mousemove", function(d){  //Mouse event
+        var val =Math.round(d[1] * 100) / 100
+        obj. tooltip
+          .html(
+            "<div> Total " +d[0]+"<br/> " + val + "</div>")//
+        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX-(100);
+        let yPosition = d3.event.clientY -100 + obj.winref.nativeWindow.scrollY;
+        obj.tooltip.style("left", xPosition + "px")
+          .style("top", yPosition + "px")
+      });
 
   }
 }

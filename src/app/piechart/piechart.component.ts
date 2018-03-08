@@ -5,6 +5,7 @@ import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input } from '@ang
 import * as d3 from 'd3';
 import { SumPipe } from '../_pipes/sum.pipe';
 import * as _ from 'underscore';
+import { WindowRefService } from '../window-ref.service';
 
 @Component({
   selector: 'app-piechart',
@@ -30,19 +31,19 @@ export class PiechartComponent implements OnInit, OnChanges {
   path: any;
   values: Array<number>;
   labels: Array<string>;
-  tooltip: any;
   centralLabel: any;
   pieColours: any;
   slices: Array<any>;
   selectedSlice: any;
   colourSlices: Array<string>;
   arc: any;
-  arcEnter: any;
+  tooltip:any;
 
   details:any;
 
   constructor(
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private winref: WindowRefService
   ) {}
 
   ngOnInit() {
@@ -50,8 +51,6 @@ export class PiechartComponent implements OnInit, OnChanges {
     this.details.title=this.chart_title;
     // create chart and render
     this.createChart();
-    // Initial update
-   // this.updateChart(true);
     this.updateChart(false);
   }
 
@@ -63,6 +62,7 @@ export class PiechartComponent implements OnInit, OnChanges {
   }
 
   createChart = () => {
+
     // chart configuration
     this.hostElement = this.chartContainer.nativeElement;
 
@@ -71,7 +71,11 @@ export class PiechartComponent implements OnInit, OnChanges {
     const outerRadius = this.radius - 50;
     const hoverRadius = this.radius - 5;
     this.pieColours = this.colours ? d3.scaleOrdinal().range(this.colours) : d3.scaleOrdinal(d3.schemeCategory20c);
-    this.tooltip = this.elRef.nativeElement.querySelector('.tooltip');
+    this.tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "mytooltip")
+      .style("display", "none");
+    //
 
     // create a pie generator and tell it where to get numeric values from and whether sorting is needed or not
     // this is just a function that will be called to obtain data prior binding that data to elements of the chart
@@ -112,7 +116,7 @@ export class PiechartComponent implements OnInit, OnChanges {
   }
 
   updateChart = (firstRun: boolean) => {
-    const vm = this;
+    const obj =  this;
 
     this.slices = this.updateSlices(this.data);
     this.labels = this.slices.map(slice => slice.family);
@@ -132,8 +136,29 @@ export class PiechartComponent implements OnInit, OnChanges {
     arcEnter.append('path')
       .attr('d', this.arcGenerator)
       .each((values) => firstRun ? values.storedValues = values : null)
-      //.on('mouseover', this.mouseover)
-      //.on('mouseout', this.mouseout);
+      .on("mouseenter", function(d) {  //Mouse event
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .style('cursor', 'pointer')
+        obj.tooltip
+          .transition()  //Opacity transition when the tooltip appears
+          .duration(500)
+          .style("display", "block")  //The tooltip appears
+      })
+      .on("mouseleave", function() {
+        obj.tooltip.style("display", "none"); })
+
+      .on("mousemove", function(d){  //Mouse event
+        const slice = obj.slices[d.index];
+        obj.tooltip
+          .html(
+            "<div>Total " + slice.family +"<br/> "+slice.amount+"</div>")//
+        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX-(100);
+        let yPosition = d3.event.clientY -100 + obj.winref.nativeWindow.scrollY;
+        obj.tooltip.style("left", xPosition + "px")
+          .style("top", yPosition + "px");
+      })
 
     // configure a transition to play on d elements of a path
     // whenever new values are passed in, the values and the previously stored values will be used
@@ -145,10 +170,9 @@ export class PiechartComponent implements OnInit, OnChanges {
       .transition()
       .duration(750)
       .attrTween('d', function(newValues, i){
-        return vm.arcTween(newValues, i, this);
+        return obj.arcTween(newValues, i, this);
       });
     //
-    var obj=this;
     //------ labels position
     var text = this.svg.select(".labels").selectAll("text")
       .data(this.pieGenerator, function(d) {
@@ -194,7 +218,6 @@ export class PiechartComponent implements OnInit, OnChanges {
       .data(this.pieGenerator, function(d) {
         return d.family;
       });
-      //.data(pie(data), key);
 
     polyline.enter()
       .append("polyline");
