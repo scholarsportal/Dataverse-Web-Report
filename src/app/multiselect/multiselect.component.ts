@@ -59,7 +59,23 @@ export class MultiselectComponent implements OnInit {
 
   createMultiselectComponent(options){
     //labels
-    this.myOptions=options;
+    //strip the names
+    var _options = [];
+    for(var i =0 ;i < options.length;i++){
+      var temp_obj = Object.assign({}, options[i]);
+      temp_obj.name = temp_obj.name.replace(/['"]+/g, '')
+      _options.push(temp_obj);
+    }
+
+    _options.sort(function s(a,b) {
+      if (a.name.toUpperCase() < b.name.toUpperCase())
+        return -1;
+      if (a.name.toUpperCase() > b.name.toUpperCase())
+        return 1;
+      return 0;
+    });
+    //
+    this.myOptions = _options;
   }
   onChange(e) {
     this.parentUpdateCharts.emit( this.optionsModel );

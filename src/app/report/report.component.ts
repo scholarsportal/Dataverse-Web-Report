@@ -95,15 +95,6 @@ export class ReportComponent implements OnInit {
           obj.dataverses.push({id: i, name: obj.csv_data[id][i][0]});
         }
       }
-
-
-      obj.dataverses.sort(function s(a,b) {
-        if (a.name.toUpperCase() < b.name.toUpperCase())
-          return -1;
-        if (a.name.toUpperCase() > b.name.toUpperCase())
-          return 1;
-        return 0;
-      });
       //
       obj.parentCreateDropdown.emit(obj.dataverses);
     }
