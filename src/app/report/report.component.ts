@@ -161,7 +161,7 @@ export class ReportComponent implements OnInit {
     // we just want a subset of the data
     var chart_data = [];
     var start = 3;
-    for (let i = start; i < totals.length - 1; i++) {
+    for (let i = start; i < totals.length - 2; i++) {//omit the last two columns hiding totals
     chart_data.push([
         this.csv_data[id][0][i],
         totals[i]
@@ -169,7 +169,7 @@ export class ReportComponent implements OnInit {
       // get the range
       if (i === start) {
         this.date_range = this.csv_data[id][0][i];
-      } else if (i === totals.length - 2 ) {
+      } else if (i === totals.length - 3 ) { // omit the last 2 header cols containing totals
         this.date_range += ' to ' + this.csv_data[id][0][i];
         this.parentChangeDateRange.emit(this.date_range);
       }
