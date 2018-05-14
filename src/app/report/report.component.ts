@@ -39,30 +39,30 @@ export class ReportComponent implements OnInit {
         data => this.extractData(data,id),
         error => console.log(error),
         ()=>func(this,id)
-        );
+      );
   }
   //https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
   private CSVtoArray(text) {
-    var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-    var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-    // Return NULL if input string is not well formed CSV string.
-    if (!re_valid.test(text)) return null;
-    var a = [];                     // Initialize array to receive values.
-    text.replace(re_value, // "Walk" the string using replace with callback.
-      function(m0, m1, m2, m3) {
-        // Remove backslash from \' in single quoted values.
-        if      (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-        // Remove backslash from \" in double quoted values.
-        else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
-        else if (m3 !== undefined) a.push(m3);
-        return ''; // Return empty string.
-      });
-    // Handle special case of empty last value.
-    if (/,\s*$/.test(text)) a.push('');
-    return a;
+    let ret = [''], i = 0, p = '', s = true;
+    for (let l in text) {
+      l = text[l];
+      if ('"' === l) {
+        s = !s;
+        if ('"' === p) {
+          ret[i] += '"';
+          l = '-';
+        } else if ('' === p)
+          l = '-';
+      } else if (s && ',' === l)
+        l = ret[++i] = '';
+      else
+        ret[i] += l;
+      p = l;
+    }
+    return ret;
   };
   private extractData(res: String,id) {
-   let csv_data = res
+    let csv_data = res
     let allTextLines = csv_data.split(/\r\n|\n/);
     let lines = [];
 
@@ -112,24 +112,24 @@ export class ReportComponent implements OnInit {
   }
   //parse the subject feed
   private parseFeed2(obj,id){
-   var chart_data = obj.getTotals2(id,obj.getSubject);
+    var chart_data = obj.getTotals2(id,obj.getSubject);
     obj.parentCreatePieChart.emit( chart_data );
   }
   //parse the type feed
   private parseFeed3(obj,id){
     var chart_data = obj.getTotals2(id,obj.getSubject1);
-   obj.parentCreatePieChart2.emit( chart_data );
+    obj.parentCreatePieChart2.emit( chart_data );
   }
   /////////
   private getSelectionNames(){
-   var selection_names=[];
+    var selection_names=[];
     if(this.selection){
       //need to get the selection name -- note the ids are off due to header
-        for(var i = 0; i < this.dataverses.length; i++) {
-          for(var j = 0; j < this.selection.length; j++){
-            if(this.dataverses[i].id==this.selection[j]){
-              selection_names.push(this.dataverses[i].name)
-            }
+      for(var i = 0; i < this.dataverses.length; i++) {
+        for(var j = 0; j < this.selection.length; j++){
+          if(this.dataverses[i].id==this.selection[j]){
+            selection_names.push(this.dataverses[i].name)
+          }
 
         }
       }
@@ -162,7 +162,7 @@ export class ReportComponent implements OnInit {
     var chart_data = [];
     var start = 3;
     for (let i = start; i < totals.length - 2; i++) {//omit the last two columns hiding totals
-    chart_data.push([
+      chart_data.push([
         this.csv_data[id][0][i],
         totals[i]
       ]);
@@ -230,8 +230,20 @@ export class ReportComponent implements OnInit {
       b = b[1];
       return a > b ? -1 : (a < b ? 1 : 0);
     });
+    //group matching records and add totals
+    var grouped_data=[]
+    for(var i=0;i<chart_data.length;i++){
+      var index = grouped_data.findIndex(grouped_data => grouped_data[0] === chart_data[i][0]);
+      //if(grouped_data.)
+      if(index==-1){
+        grouped_data.push(chart_data[i])
+      }else{
+        grouped_data[index][1]+=chart_data[i][1]
+
+      }
+    }
     //
-    return chart_data
+    return grouped_data;
   }
   //
   // parse the feed filtering by selections
