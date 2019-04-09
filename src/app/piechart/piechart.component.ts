@@ -93,7 +93,7 @@ export class PiechartComponent implements OnInit, OnChanges {
       .innerRadius(this.radius)
       .outerRadius(this.radius);
 
-    // create svg element, configure dimentions and centre and add to DOM
+    // create svg element, configure dimensions and centre and add to DOM
     this.svg = d3.select(this.hostElement).append('svg')
       .attr('viewBox', '0, 0, ' + this.hostElement.offsetWidth + ', ' + this.hostElement.offsetHeight)
       .append('g')

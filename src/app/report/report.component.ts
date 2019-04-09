@@ -26,7 +26,7 @@ export class ReportComponent implements OnInit {
 
   ngOnInit() {
     this.dataverses = [];
-    //the following loads mulitple csv files and processes them to be used in chart generation
+    //the following loads multiple csv files and processes them to be used in chart generation
     this.loadCSV('assets/Downloads_by_Dataverse.csv',0,this.parseFeed);
     this.loadCSV('assets/Downloads_by_Dataset.csv',1,this.parseFeed1);
     this.loadCSV('assets/Subjects.csv',2,this.parseFeed2);
@@ -179,7 +179,7 @@ export class ReportComponent implements OnInit {
   }
   private getTotals1(id,variable) {
     //count the number of datasets within a dataverse
-    //create a two demensional array [[title,count]]
+    //create a two dimensional array [[title,count]]
     //group by dataverse or just the first column
     var max_length=18;
     var indexed_array={};
@@ -210,7 +210,7 @@ export class ReportComponent implements OnInit {
         }
       }
     }
-    //convert the json into a two demensional array
+    //convert the json into a two dimensional array
     for (var o in indexed_array) {//
       //var strip the dataverse part
       var name:any = o;
@@ -291,7 +291,7 @@ export class ReportComponent implements OnInit {
   private getSubject1(obj,subject) {
     var subject_new=subject.substring(0,subject.indexOf("/"));//Only difference
     subject_new=subject_new.charAt(0).toUpperCase() + subject_new.slice(1);
-    //add a few sub catagories
+    //add a few sub categories
     for(var l = 0; l < obj.file_type_lookup.length; l++){
       if(subject.indexOf(obj.file_type_lookup[l][0])>-1){
         subject_new=obj.file_type_lookup[l][1];
