@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
-import {FormsModule} from '@angular/forms'; //required for ngModel
+import {FormsModule} from '@angular/forms'; // required for ngModel
 import { MultiselectDropdownModule } from 'angular-2-dropdown-multiselect';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 

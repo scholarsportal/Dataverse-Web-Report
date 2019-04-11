@@ -8,7 +8,7 @@ import { MultiselectComponent } from './multiselect/multiselect.component';
 })
 export class AppComponent implements OnInit {
   title = 'Dataverse Report';
-  date_range: string;
+  dateRange: string;
   selection: any = [];
   chartData: Array<any>;
   chartData1: Array<any>;
@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   // dynamically update the chart title depending on the number of bars
   chart_title2 = '';
   chart_title1 = '';
-  //
+
   @ViewChild(ReportComponent) reportComponent: ReportComponent;
   @ViewChild(MultiselectComponent) multiselectComponent: MultiselectComponent;
 
@@ -38,15 +38,17 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
   }
+
   createChart(data) {
     this.chartData = data;
   }
+
   createChart1(data) {
-    this.chart_title1='Number of Datasets by Dataverse';
-    if (typeof(data)!='undefined' && data.length > 15 ) {
-      this.chartData1 = data.slice(0 , 15);
+    this.chart_title1 = 'Number of Datasets by Dataverse';
+    if (typeof(data) !== 'undefined' && data.length > 15) {
+      this.chartData1 = data.slice(0, 15);
       this.chart_title1 += ' (Top 15)';
-    }else{
+    } else {
       this.chartData1 = data;
     }
   }
@@ -56,32 +58,33 @@ export class AppComponent implements OnInit {
     if (typeof(data) !== 'undefined' && data.length > 15 ) {
       this.chartData2 = data.slice(0 , 15);
       this.chart_title2 += ' (Top 15)';
-    }else{
+    } else {
       this.chartData2 = data;
     }
   }
+
   createPieChart(data) {
     this.pieChartData = data;
 
   }
+
   createPieChart2(data) {
     this.pieChartData2 = data;
   }
-  updateDateRange(str) {
-    this.date_range = str;
-  }
 
+  updateDateRange(str) {
+    this.dateRange = str;
+  }
 
   createDropdown(options) {
     this.multiselectComponent.createMultiselectComponent(options);
   }
-  updateCharts(selection) {
 
+  updateCharts(selection) {
     let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?selection=' + selection;
     window.history.pushState({path: newurl}, '', newurl);
     // the following broadcasts to regenerate the data which in turn updates the charts
     this.reportComponent.updateTotals(selection);
-
   }
 
 }

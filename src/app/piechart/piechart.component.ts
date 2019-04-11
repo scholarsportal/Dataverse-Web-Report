@@ -1,5 +1,5 @@
-//ref http://www.muller.tech/post/2017/11/13/angular5-d3js-pie-chart/
-//bl.ocks.org/enjalot/1203641
+// ref http://www.muller.tech/post/2017/11/13/angular5-d3js-pie-chart/
+// bl.ocks.org/enjalot/1203641
 
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
@@ -37,9 +37,8 @@ export class PiechartComponent implements OnInit, OnChanges {
   selectedSlice: any;
   colourSlices: Array<string>;
   arc: any;
-  tooltip:any;
-
-  details:any;
+  tooltip: any;
+  details: any;
 
   constructor(
     private elRef: ElementRef,
@@ -47,8 +46,8 @@ export class PiechartComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    this.details={}
-    this.details.title=this.chart_title;
+    this.details = {};
+    this.details.title = this.chart_title;
     // create chart and render
     this.createChart();
     this.updateChart(false);
@@ -56,26 +55,24 @@ export class PiechartComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     // update chart on data input value change
-    if (this.svg){
+    if (this.svg) {
       this.updateChart(false);
     }
   }
 
   createChart = () => {
-
     // chart configuration
     this.hostElement = this.chartContainer.nativeElement;
 
-    this.radius = Math.min(this.hostElement.offsetWidth, this.hostElement.offsetHeight) / 2-80;
+    this.radius = Math.min(this.hostElement.offsetWidth, this.hostElement.offsetHeight) / 2 - 80;
     const innerRadius = this.radius - 10;
     const outerRadius = this.radius - 50;
     const hoverRadius = this.radius - 5;
     this.pieColours = this.colours ? d3.scaleOrdinal().range(this.colours) : d3.scaleOrdinal(d3.schemeCategory20c);
-    this.tooltip = d3.select("body")
-      .append("div")
-      .attr("class", "mytooltip")
-      .style("display", "none");
-    //
+    this.tooltip = d3.select('body')
+      .append('div')
+      .attr('class', 'mytooltip')
+      .style('display', 'none');
 
     // create a pie generator and tell it where to get numeric values from and whether sorting is needed or not
     // this is just a function that will be called to obtain data prior binding that data to elements of the chart
@@ -89,6 +86,7 @@ export class PiechartComponent implements OnInit, OnChanges {
     this.arcHover = d3.arc()
       .innerRadius(innerRadius)
       .outerRadius(hoverRadius);
+
     this.outerArc = d3.arc()
       .innerRadius(this.radius)
       .outerRadius(this.radius);
@@ -99,20 +97,19 @@ export class PiechartComponent implements OnInit, OnChanges {
       .append('g')
       .attr('transform', `translate(${this.hostElement.offsetWidth / 2}, ${this.hostElement.offsetHeight / 2})`);
 
-    this.svg.append("text")
-      .attr("x", 0)
-      .attr("y", 0 - (this.hostElement.offsetHeight/ 2)+15)
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
+    this.svg.append('text')
+      .attr('x', 0)
+      .attr('y', 0 - (this.hostElement.offsetHeight / 2) + 15)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '16px')
       .text(this.details.title);
 
-    //
-    this.svg.append("g")
-      .attr("class", "slices");
-    this.svg.append("g")
-      .attr("class", "labels");
-    this.svg.append("g")
-      .attr("class", "lines");
+    this.svg.append('g')
+      .attr('class', 'slices');
+    this.svg.append('g')
+      .attr('class', 'labels');
+    this.svg.append('g')
+      .attr('class', 'lines');
   }
 
   updateChart = (firstRun: boolean) => {
@@ -136,29 +133,29 @@ export class PiechartComponent implements OnInit, OnChanges {
     arcEnter.append('path')
       .attr('d', this.arcGenerator)
       .each((values) => firstRun ? values.storedValues = values : null)
-      .on("mouseenter", function(d) {  //Mouse event
+      .on('mouseenter', function(d) {  // Mouse event
         d3.select(this)
           .transition()
           .duration(500)
-          .style('cursor', 'pointer')
+          .style('cursor', 'pointer');
         obj.tooltip
-          .transition()  //Opacity transition when the tooltip appears
+          .transition()  // Opacity transition when the tooltip appears
           .duration(500)
-          .style("display", "block")  //The tooltip appears
+          .style('display', 'block');  // The tooltip appears
       })
-      .on("mouseleave", function() {
-        obj.tooltip.style("display", "none"); })
+      .on('mouseleave', function() {
+        obj.tooltip.style('display', 'none'); })
 
-      .on("mousemove", function(d){  //Mouse event
+      .on('mousemove', function(d) {  // Mouse event
         const slice = obj.slices[d.index];
         obj.tooltip
           .html(
-            "<div>Total " + slice.family +"<br/> "+slice.amount+"</div>")//
-        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX-(100);
-        let yPosition = d3.event.clientY -100 + obj.winref.nativeWindow.scrollY;
-        obj.tooltip.style("left", xPosition + "px")
-          .style("top", yPosition + "px");
-      })
+            '<div>Total ' + slice.family + '<br/> ' + slice.amount + '</div>');
+        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX - (100);
+        let yPosition = d3.event.clientY - 100 + obj.winref.nativeWindow.scrollY;
+        obj.tooltip.style('left', xPosition + 'px')
+          .style('top', yPosition + 'px');
+      });
 
     // configure a transition to play on d elements of a path
     // whenever new values are passed in, the values and the previously stored values will be used
@@ -169,67 +166,68 @@ export class PiechartComponent implements OnInit, OnChanges {
       .attr('d', this.arcGenerator)
       .transition()
       .duration(750)
-      .attrTween('d', function(newValues, i){
+      .attrTween('d', function(newValues, i) {
         return obj.arcTween(newValues, i, this);
       });
-    //
-    //------ labels position
-    var text = this.svg.select(".labels").selectAll("text")
+
+    // labels position
+    let text = this.svg.select('.labels').selectAll('text')
       .data(this.pieGenerator, function(d) {
         return d.family;
       });
-    //label text
+
+    // label text
     text.enter()
-      .append("text")
-      .attr("dy", ".35em")
+      .append('text')
+      .attr('dy', '.35em')
       .text(function(d) {
-        return obj.labels[d.index]+" "+obj.toPercent(obj.values[d.index], new SumPipe().transform(obj.values))
+        return obj.labels[d.index] + ' ' + obj.toPercent(obj.values[d.index], new SumPipe().transform(obj.values));
       });
-    function midAngle(d){
-      return d.startAngle + (d.endAngle - d.startAngle)/2;
+    function midAngle(d) {
+      return d.startAngle + (d.endAngle - d.startAngle) / 2;
     }
 
-    this.svg.select(".labels").selectAll("text").transition().duration(1000)
-      .attrTween("transform", function(d) {
+    this.svg.select('.labels').selectAll('text').transition().duration(1000)
+      .attrTween('transform', function(d) {
         this._current = this._current || d;
-        var interpolate = d3.interpolate(this._current, d);
+        let interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          var d2 = interpolate(t);
-          var pos = obj.outerArc.centroid(d2);
+          let d2 = interpolate(t);
+          let pos = obj.outerArc.centroid(d2);
           pos[0] = obj.radius * (midAngle(d2) < Math.PI ? 1 : -1);
-         return "translate("+ pos +")";
+         return 'translate(' + pos + ')';
         };
       })
-      .styleTween("text-anchor", function(d){
+      .styleTween('text-anchor', function(d) {
         this._current = this._current || d;
-        var interpolate = d3.interpolate(this._current, d);
+        let interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          var d2 = interpolate(t);
-          return midAngle(d2) < Math.PI ? "start":"end";
+          let d2 = interpolate(t);
+          return midAngle(d2) < Math.PI ? 'start' : 'end';
         };
       });
 
    text.exit()
       .remove();
-   ///
-    var polyline = this.svg.select(".lines").selectAll("polyline")
+
+    let polyline = this.svg.select('.lines').selectAll('polyline')
       .data(this.pieGenerator, function(d) {
         return d.family;
       });
 
     polyline.enter()
-      .append("polyline");
+      .append('polyline');
 
-    this.svg.select(".lines").selectAll("polyline").transition().duration(1000)
-      .attrTween("points", function(d){
+    this.svg.select('.lines').selectAll('polyline').transition().duration(1000)
+      .attrTween('points', function(d) {
         this._current = this._current || d;
-        var interpolate = d3.interpolate(this._current, d);
+        let interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          var d2 = interpolate(t);
-          var pos = obj.outerArc.centroid(d2);
+          let d2 = interpolate(t);
+          let pos = obj.outerArc.centroid(d2);
           pos[0] = obj.radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
           return [obj.arcGenerator.centroid(d2), obj.outerArc.centroid(d2), pos];
         };
@@ -266,8 +264,8 @@ export class PiechartComponent implements OnInit, OnChanges {
 
     results.map(result => {
       const queries = newData.filter(query => query.family === result.family);
-
     });
+
     return results;
   }
 }
