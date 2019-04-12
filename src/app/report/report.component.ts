@@ -18,11 +18,15 @@ export class ReportComponent implements OnInit {
 
   constructor(private http: HttpClient) { }
   dataverses: {id: number, name: string}[];
-  csv_data: any[] = [];
+  csvData: any[] = [];
   selection: any[] = [];
   dateRange: '';
-
-  file_type_lookup: any[] = [['zip', 'ZIP'], ['application/pdf', 'PDF'], ['application/msword', 'Word'], ['application/vnd.ms-excel', 'Excel']];
+  fileTypeLookup: any[] = [
+    ['zip', 'ZIP'],
+    ['application/pdf', 'PDF'],
+    ['application/msword', 'Word'],
+    ['application/vnd.ms-excel', 'Excel']
+  ];
 
   ngOnInit() {
     this.dataverses = [];
@@ -33,8 +37,8 @@ export class ReportComponent implements OnInit {
     this.loadCSV('assets/File_Types.csv', 3, this.parseFeed3);
   }
 
-  loadCSV(file_name, id, func) {
-    this.http.get(file_name, {responseType: 'text'})
+  loadCSV(fileName, id, func) {
+    this.http.get(fileName, {responseType: 'text'})
       .subscribe(
         data => this.extractData(data,id),
         error => console.log(error),
@@ -65,9 +69,9 @@ export class ReportComponent implements OnInit {
   };
 
   private extractData(res: String, id) {
-    let csv_data = res;
-    let allTextLines = csv_data.split(/\r\n|\n/);
-    let lines = [];
+    const csvData = res;
+    const allTextLines = csvData.split(/\r\n|\n/);
+    const lines = [];
 
     for (let i = 0; i < allTextLines.length; i++) {
       // split
@@ -78,210 +82,213 @@ export class ReportComponent implements OnInit {
       }
 
       if (data && typeof (data.length) !== 'undefined') {
-        let tarr = [];
+        const tarr = [];
         for (let j = 0; j < data.length; j++) {
           tarr.push(data[j]);
         }
         lines.push(tarr);
       }
     }
-    this.csv_data[id] = lines;
+    this.csvData[id] = lines;
   }
   // parse download feed
   private parseFeed(obj, id) {
     // keep track of all the dataverse names
     // disregard the first item and the last
     if (obj.dataverses.length === 0) {
-      for (var i = 1; i < obj.csv_data[id].length - 2; i++) {
+      for (let i = 1; i < obj.csvData[id].length - 2; i++) {
         // make sure its published
-        if (obj.csv_data[id][i][2] !== '') {
-          obj.dataverses.push({id: i, name: obj.csv_data[id][i][0]});
+        if (obj.csvData[id][i][2] !== '') {
+          obj.dataverses.push({id: i, name: obj.csvData[id][i][0]});
         }
       }
-
       obj.parentCreateDropdown.emit(obj.dataverses);
     }
-    //
-    var chart_data = obj.getTotals(id, obj.getSubject);
-    obj.parentCreateChart.emit( chart_data );
+
+    let chartData = obj.getTotals(id, obj.getSubject);
+    obj.parentCreateChart.emit(chartData);
   }
+
   // parse dataset count
   private parseFeed1(obj, id) {
-    var chart_data = obj.getTotals1(id, 'count');
-    obj.parentCreateChart1.emit( chart_data );
+    let chartData = obj.getTotals1(id, 'count');
+    obj.parentCreateChart1.emit( chartData );
 
-    var chart_data = obj.getTotals1(id, 'size');
-    obj.parentCreateChart2.emit( chart_data );
+    chartData = obj.getTotals1(id, 'size');
+    obj.parentCreateChart2.emit( chartData );
   }
+
   // parse the subject feed
   private parseFeed2(obj, id) {
-    var chart_data = obj.getTotals2(id, obj.getSubject);
-    obj.parentCreatePieChart.emit( chart_data );
-  }
-  // parse the type feed
-  private parseFeed3(obj, id) {
-    var chart_data = obj.getTotals2(id, obj.getSubject1);
-    obj.parentCreatePieChart2.emit(chart_data);
+    const chartData = obj.getTotals2(id, obj.getSubject);
+    obj.parentCreatePieChart.emit( chartData );
   }
 
-  private getSelectionNames(){
-    var selection_names = [];
+  // parse the type feed
+  private parseFeed3(obj, id) {
+    const chartData = obj.getTotals2(id, obj.getSubject1);
+    obj.parentCreatePieChart2.emit(chartData);
+  }
+
+  private getSelectionNames() {
+    const selectionNames = [];
     if (this.selection) {
       // need to get the selection name -- note the ids are off due to header
-      for (var i = 0; i < this.dataverses.length; i++) {
-        for (var j = 0; j < this.selection.length; j++) {
+      for (let i = 0; i < this.dataverses.length; i++) {
+        for (let j = 0; j < this.selection.length; j++) {
           if (this.dataverses[i].id==this.selection[j]) {
-            selection_names.push(this.dataverses[i].name);
+            selectionNames.push(this.dataverses[i].name);
           }
         }
       }
     }
-    return selection_names;
+    return selectionNames;
   }
 
   private getTotals(id) {
-    var totals = <any>[];
+    let totals = <any>[];
     // step 1. get the slots for the totals
-    for (var j = 0; j < this.csv_data[id][0].length; j++) {
+    for (let j = 0; j < this.csvData[id][0].length; j++) {
       // first create the attribute
       if (typeof(totals[j]) === 'undefined') {
         totals.push(0);
       }
     }
 
-    for (var i = 0; i < this.csv_data[id].length; i++) {
+    for (let i = 0; i < this.csvData[id].length; i++) {
       // only take the data which is selected or use all the data
       if (this.selection.indexOf(i) > -1 || this.selection.length === 0) {
-        for (var j = 0; j < this.csv_data[id][i].length; j++) {
-          if (!isNaN(this.csv_data[id][i][j])) {
-            totals[j] = totals[j] + Number(this.csv_data[id][i][j]);
+        for (let j = 0; j < this.csvData[id][i].length; j++) {
+          if (!isNaN(this.csvData[id][i][j])) {
+            totals[j] = totals[j] + Number(this.csvData[id][i][j]);
           }
         }
       }
     }
 
     // we just want a subset of the data
-    var chart_data = [];
-    var start = 3;
+    const chartData = [];
+    const start = 3;
     for (let i = start; i < totals.length - 2; i++) { // omit the last two columns hiding totals
-      chart_data.push([
-        this.csv_data[id][0][i],
+      chartData.push([
+        this.csvData[id][0][i],
         totals[i]
       ]);
       // get the range
       if (i === start) {
-        this.dateRange = this.csv_data[id][0][i];
+        this.dateRange = this.csvData[id][0][i];
       } else if (i === totals.length - 3 ) { // omit the last 2 header cols containing totals
-        this.dateRange += ' to ' + this.csv_data[id][0][i];
+        this.dateRange += ' to ' + this.csvData[id][0][i];
         this.parentChangeDateRange.emit(this.dateRange);
       }
     }
-    totals = chart_data;
+    totals = chartData;
     return totals;
   }
   private getTotals1(id, variable) {
     // count the number of datasets within a dataverse
     // create a two dimensional array [[title,count]]
     // group by dataverse or just the first column
-    var max_length = 18;
-    var indexed_array = {};
-    var chart_data = <any>[];
-    //
-    var selection_names = this.getSelectionNames();
+    const maxLength = 18;
+    const indexedArray = {};
+    const chartData = <any>[];
+    const selectionNames = this.getSelectionNames();
 
-    if(typeof(this.csv_data[id]) === 'undefined') {
+    if(typeof(this.csvData[id]) === 'undefined') {
       return;
     }
 
-    var status_slot = this.csv_data[id][0].indexOf('Status');
-    var size_slot = this.csv_data[id][0].indexOf('Size (KB)');
+    const statusSlot = this.csvData[id][0].indexOf('Status');
+    let sizeSlot = this.csvData[id][0].indexOf('Size (KB)');
 
-    for (var i = 1; i < this.csv_data[id].length - 1; i++) {
-      var row = this.csv_data[id][i];
-      if (row[status_slot] === 'RELEASED') {
+    for (let i = 1; i < this.csvData[id].length - 1; i++) {
+      let row = this.csvData[id][i];
+      if (row[statusSlot] === 'RELEASED') {
         // depending on the selection use either all the top level dataverses or the second level one
-        var name = row[0];
-        if (selection_names.indexOf(name) > -1 || selection_names.length === 0  ) {
-          if (selection_names.length > 0) {
+        let name = row[0];
+        if (selectionNames.indexOf(name) > -1 || selectionNames.length === 0  ) {
+          if (selectionNames.length > 0) {
             name = row[1];
           }
-          if (typeof(indexed_array[name]) === 'undefined') {
-            indexed_array[name] = {count: 0, size: 0};
+          if (typeof(indexedArray[name]) === 'undefined') {
+            indexedArray[name] = {count: 0, size: 0};
           }
-          indexed_array[name].count += 1;
-          indexed_array[name].size += Number(row[size_slot]) / 1048576;
+          indexedArray[name].count += 1;
+          indexedArray[name].size += Number(row[sizeSlot]) / 1048576;
         }
       }
     }
     // convert the json into a two dimensional array
-    for (var o in indexed_array) {
-      // var strip the dataverse part
-      var name: any = o;
+    for (let o in indexedArray) {
+      // let strip the dataverse part
+      let name: any = o;
       if (name.indexOf(" Dataverse") > -1) {
-        name = name.substring(0,name.indexOf(" Dataverse"))
+        name = name.substring(0, name.indexOf(" Dataverse"))
       }
-      if (name.length > max_length) {
-        name = name.substring(0,max_length) + '...';
+      if (name.length > maxLength) {
+        name = name.substring(0, maxLength) + '...';
       }
-      chart_data.push([
-        name,indexed_array[o][variable]
+      chartData.push([
+        name, indexedArray[o][variable]
       ])
     }
+
     // sort it
-    chart_data.sort(function(a, b) {
+    chartData.sort(function(a, b) {
       a = a[1];
       b = b[1];
       return a > b ? -1 : (a < b ? 1 : 0);
     });
+
     // group matching records and add totals
-    var grouped_data = [];
-    for (var i = 0; i < chart_data.length; i++) {
-      var index = grouped_data.findIndex(grouped_data => grouped_data[0] === chart_data[i][0]);
+    const groupedData = [];
+    for (let i = 0; i < chartData.length; i++) {
+      const index = groupedData.findIndex(groupedData => groupedData[0] === chartData[i][0]);
 
       if (index === -1) {
-        grouped_data.push(chart_data[i]);
+        groupedData.push(chartData[i]);
       } else {
-        grouped_data[index][1] += chart_data[i][1];
+        groupedData[index][1] += chartData[i][1];
       }
     }
-    return grouped_data;
+    return groupedData;
   }
 
   // parse the feed filtering by selections
-  private getTotals2(id,subjectFunc) {
-    var chart_data = <any>[];
-    var selection_names = this.getSelectionNames();
+  private getTotals2(id, subjectFunc) {
+    const chartData = <any>[];
+    const selectionNames = this.getSelectionNames();
 
-    if (typeof(this.csv_data[id]) === 'undefined') {
+    if (typeof(this.csvData[id]) === 'undefined') {
       return;
     }
 
-    var status_slot = this.csv_data[id][0].indexOf('Status');
-    var subjects = [];
-    var sub_start = 8;
-    var sub_end=this.csv_data[id][0].length;
+    const statusSlot = this.csvData[id][0].indexOf('Status');
+    const subjects = [];
+    const subStart = 8;
+    const subEnd = this.csvData[id][0].length;
 
     // create an array of subjects for quick lookup
-    for (var i = sub_start; i < sub_end; i++) {
-      subjects.push(this.csv_data[id][0][i]);
-    };
+    for (let i = subStart; i < subEnd; i++) {
+      subjects.push(this.csvData[id][0][i]);
+    }
 
-    for (var i = 1; i < this.csv_data[id].length - 1; i++) {
-      var row = this.csv_data[id][i];
-      if (row[status_slot] === 'RELEASED') {
-        if (selection_names.indexOf(row[0]) > -1 || selection_names.length === 0) {
-          var k = -1;
-          for (var j = sub_start; j < sub_end - 1; j++) {
+    for (let i = 1; i < this.csvData[id].length - 1; i++) {
+      const row = this.csvData[id][i];
+      if (row[statusSlot] === 'RELEASED') {
+        if (selectionNames.indexOf(row[0]) > -1 || selectionNames.length === 0) {
+          let k = -1;
+          for (let j = subStart; j < subEnd - 1; j++) {
             k++;
             if (Number(row[j]) > 0) {
-              var subject = subjectFunc(this, subjects[k]);
-              chart_data.push({family: subject});
+              const subject = subjectFunc(this, subjects[k]);
+              chartData.push({family: subject});
             }
           }
         }
       }
     }
-    return chart_data;
+    return chartData;
   }
 
   private getSubject(obj, subject) {
@@ -289,15 +296,15 @@ export class ReportComponent implements OnInit {
   }
 
   private getSubject1(obj, subject) {
-    var subject_new = subject.substring(0, subject.indexOf('/')); // Only difference
-    subject_new = subject_new.charAt(0).toUpperCase() + subject_new.slice(1);
+    let subjectNew = subject.substring(0, subject.indexOf('/')); // Only difference
+    subjectNew = subjectNew.charAt(0).toUpperCase() + subjectNew.slice(1);
     // add a few sub categories
-    for (var l = 0; l < obj.file_type_lookup.length; l++){
-      if (subject.indexOf(obj.file_type_lookup[l][0]) > -1) {
-        subject_new = obj.file_type_lookup[l][1];
+    for (let l = 0; l < obj.fileTypeLookup.length; l++){
+      if (subject.indexOf(obj.fileTypeLookup[l][0]) > -1) {
+        subjectNew = obj.fileTypeLookup[l][1];
       }
     }
-    return subject_new;
+    return subjectNew;
   }
 
   // ** the entry point from the root app **/

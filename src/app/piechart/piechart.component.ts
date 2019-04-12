@@ -16,7 +16,7 @@ import { WindowRefService } from '../window-ref.service';
 export class PiechartComponent implements OnInit, OnChanges {
   @ViewChild('containerPieChart') chartContainer: ElementRef;
   @Input() data: any = [];
-  @Input() chart_title: string;
+  @Input() chartTitle: string;
   @Input() colours: Array<string>;
   hostElement: any;
   svg: any;
@@ -47,7 +47,7 @@ export class PiechartComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.details = {};
-    this.details.title = this.chart_title;
+    this.details.title = this.chartTitle;
     // create chart and render
     this.createChart();
     this.updateChart(false);
@@ -171,7 +171,7 @@ export class PiechartComponent implements OnInit, OnChanges {
       });
 
     // labels position
-    let text = this.svg.select('.labels').selectAll('text')
+    const text = this.svg.select('.labels').selectAll('text')
       .data(this.pieGenerator, function(d) {
         return d.family;
       });
@@ -193,15 +193,15 @@ export class PiechartComponent implements OnInit, OnChanges {
         let interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          let d2 = interpolate(t);
-          let pos = obj.outerArc.centroid(d2);
+          const d2 = interpolate(t);
+          const pos = obj.outerArc.centroid(d2);
           pos[0] = obj.radius * (midAngle(d2) < Math.PI ? 1 : -1);
-         return 'translate(' + pos + ')';
+          return 'translate(' + pos + ')';
         };
       })
       .styleTween('text-anchor', function(d) {
         this._current = this._current || d;
-        let interpolate = d3.interpolate(this._current, d);
+        const interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
           let d2 = interpolate(t);
@@ -209,10 +209,10 @@ export class PiechartComponent implements OnInit, OnChanges {
         };
       });
 
-   text.exit()
+    text.exit()
       .remove();
 
-    let polyline = this.svg.select('.lines').selectAll('polyline')
+    const polyline = this.svg.select('.lines').selectAll('polyline')
       .data(this.pieGenerator, function(d) {
         return d.family;
       });
@@ -223,11 +223,11 @@ export class PiechartComponent implements OnInit, OnChanges {
     this.svg.select('.lines').selectAll('polyline').transition().duration(1000)
       .attrTween('points', function(d) {
         this._current = this._current || d;
-        let interpolate = d3.interpolate(this._current, d);
+        const interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          let d2 = interpolate(t);
-          let pos = obj.outerArc.centroid(d2);
+          const d2 = interpolate(t);
+          const pos = obj.outerArc.centroid(d2);
           pos[0] = obj.radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
           return [obj.arcGenerator.centroid(d2), obj.outerArc.centroid(d2), pos];
         };

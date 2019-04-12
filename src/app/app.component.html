@@ -13,13 +13,13 @@
       <app-multiselect (parentUpdateCharts)="updateCharts($event)" selection="{{selection}}"></app-multiselect>
     </div>
   </div>
-  <app-chart *ngIf="chartData" [data]="chartData" chart_title="Dataverse Downloads By Month" chart_label_x="Month" chart_label_y="Downloads" chart_bar_color="#31a354"></app-chart>
-    <app-chart *ngIf="chartData1" [data]="chartData1" chart_title="{{chart_title1}}" chart_label_x="" chart_label_y="Count" chart_bar_color="#3182BD"></app-chart>
+  <app-chart *ngIf="chartData" [data]="chartData" chartTitle="Dataverse Downloads By Month" chartLabelX="Month" chartLabelY="Downloads" chartBarColor="#31a354"></app-chart>
+    <app-chart *ngIf="chartData1" [data]="chartData1" chartTitle="{{chartTitle1}}" chartLabelX="" chartLabelY="Count" chartBarColor="#3182BD"></app-chart>
 
-    <app-chart *ngIf="chartData2" [data]="chartData2" chart_title="{{chart_title2}}" chart_label_x="" chart_label_y="Size (GB)" chart_bar_color="#756bb1"></app-chart>
+    <app-chart *ngIf="chartData2" [data]="chartData2" chartTitle="{{chartTitle2}}" chartLabelX="" chartLabelY="Size (GB)" chartBarColor="#756bb1"></app-chart>
   <div class="row">
-    <div class="block"><app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chart_title="File Types"></app-piechart></div>
-    <div class="block"><app-piechart *ngIf="pieChartData" [data]="pieChartData" chart_title="Subject Categories"></app-piechart></div>
+    <div class="block"><app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chartTitle="File Types"></app-piechart></div>
+    <div class="block"><app-piechart *ngIf="pieChartData" [data]="pieChartData" chartTitle="Subject Categories"></app-piechart></div>
   </div>
 
   <app-report

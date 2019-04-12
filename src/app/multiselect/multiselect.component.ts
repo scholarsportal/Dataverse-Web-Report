@@ -1,6 +1,6 @@
 // Ref https://embed.plnkr.co/MzukQC8M7l0xUKBC0wL5/
 
-import { Component, OnInit, Input, Output, EventEmitter  } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { IMultiSelectOption, IMultiSelectSettings, IMultiSelectTexts  } from 'angular-2-dropdown-multiselect';
 @Component({
   selector: 'app-multiselect',
@@ -17,18 +17,17 @@ export class MultiselectComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    var selection = [];
+    const selection = [];
     if (this.selection != 0) {
-      var selection_str = this.selection;
+      let selectionStr = this.selection;
       try {
-        var selection_str_array = selection_str.split(',');
-        for (let i = 0; i < selection_str_array.length; i++) {
-          selection.push(Number(selection_str_array[i]));
+        let selectionStr_array = selectionStr.split(',');
+        for (let i = 0; i < selectionStr_array.length; i++) {
+          selection.push(Number(selectionStr_array[i]));
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
+
     // set the default selection
     this.optionsModel = selection;
     this.mySettings = {
@@ -44,7 +43,7 @@ export class MultiselectComponent implements OnInit {
       autoUnselect: true
    };
 
-     this.myTexts = {
+    this.myTexts = {
       checkAll: 'Select all',
       uncheckAll: 'Unselect ',
       checked: 'item selected',
@@ -60,11 +59,11 @@ export class MultiselectComponent implements OnInit {
   createMultiselectComponent(options) {
     // labels
     // strip the names
-    var _options = [];
-    for (var i = 0 ; i < options.length; i++){
-      var temp_obj = Object.assign({}, options[i]);
-      temp_obj.name = temp_obj.name.replace(/['"]+/g, '');
-      _options.push(temp_obj);
+    const _options = [];
+    for (let i = 0; i < options.length; i++) {
+      const tempObj = Object.assign({}, options[i]);
+      tempObj.name = tempObj.name.replace(/['"]+/g, '');
+      _options.push(tempObj);
     }
 
     _options.sort(function s(a,b) {
