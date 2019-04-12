@@ -151,8 +151,8 @@ export class PiechartComponent implements OnInit, OnChanges {
         obj.tooltip
           .html(
             '<div>Total ' + slice.family + '<br/> ' + slice.amount + '</div>');
-        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX - (100);
-        let yPosition = d3.event.clientY - 100 + obj.winref.nativeWindow.scrollY;
+        const xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX - (100);
+        const yPosition = d3.event.clientY - 100 + obj.winref.nativeWindow.scrollY;
         obj.tooltip.style('left', xPosition + 'px')
           .style('top', yPosition + 'px');
       });
@@ -190,7 +190,7 @@ export class PiechartComponent implements OnInit, OnChanges {
     this.svg.select('.labels').selectAll('text').transition().duration(1000)
       .attrTween('transform', function(d) {
         this._current = this._current || d;
-        let interpolate = d3.interpolate(this._current, d);
+        const interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
           const d2 = interpolate(t);
@@ -204,7 +204,7 @@ export class PiechartComponent implements OnInit, OnChanges {
         const interpolate = d3.interpolate(this._current, d);
         this._current = interpolate(0);
         return function(t) {
-          let d2 = interpolate(t);
+          const d2 = interpolate(t);
           return midAngle(d2) < Math.PI ? 'start' : 'end';
         };
       });

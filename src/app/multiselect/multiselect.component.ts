@@ -19,11 +19,11 @@ export class MultiselectComponent implements OnInit {
   ngOnInit() {
     const selection = [];
     if (this.selection != 0) {
-      let selectionStr = this.selection;
+      const selectionStr = this.selection;
       try {
-        let selectionStr_array = selectionStr.split(',');
-        for (let i = 0; i < selectionStr_array.length; i++) {
-          selection.push(Number(selectionStr_array[i]));
+        const selectionStrArray = selectionStr.split(',');
+        for (let i = 0; i < selectionStrArray.length; i++) {
+          selection.push(Number(selectionStrArray[i]));
         }
       } catch (e) {}
     }
@@ -66,7 +66,7 @@ export class MultiselectComponent implements OnInit {
       _options.push(tempObj);
     }
 
-    _options.sort(function s(a,b) {
+    _options.sort(function s(a, b) {
       if (a.name.toUpperCase() < b.name.toUpperCase()) {
         return -1;
       }

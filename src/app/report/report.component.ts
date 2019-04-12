@@ -40,7 +40,7 @@ export class ReportComponent implements OnInit {
   loadCSV(fileName, id, func) {
     this.http.get(fileName, {responseType: 'text'})
       .subscribe(
-        data => this.extractData(data,id),
+        data => this.extractData(data, id),
         error => console.log(error),
         () => func(this, id)
       );
@@ -48,7 +48,10 @@ export class ReportComponent implements OnInit {
 
   // https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
   private CSVtoArray(text) {
-    let ret = [''], i = 0, p = '', s = true;
+    const ret = [''];
+    let i = 0;
+    let p = '';
+    let s = true;
     for (let l in text) {
       l = text[l];
       if ('"' === l) {
@@ -56,8 +59,9 @@ export class ReportComponent implements OnInit {
         if ('"' === p) {
           ret[i] += '"';
           l = '-';
-        } else if ('' === p)
+        } else if ('' === p) {
           l = '-';
+        }
       } else if (s && ',' === l) {
         l = ret[++i] = '';
       } else {
@@ -66,7 +70,7 @@ export class ReportComponent implements OnInit {
       p = l;
     }
     return ret;
-  };
+  }
 
   private extractData(res: String, id) {
     const csvData = res;
@@ -105,7 +109,7 @@ export class ReportComponent implements OnInit {
       obj.parentCreateDropdown.emit(obj.dataverses);
     }
 
-    let chartData = obj.getTotals(id, obj.getSubject);
+    const chartData = obj.getTotals(id, obj.getSubject);
     obj.parentCreateChart.emit(chartData);
   }
 
@@ -136,7 +140,7 @@ export class ReportComponent implements OnInit {
       // need to get the selection name -- note the ids are off due to header
       for (let i = 0; i < this.dataverses.length; i++) {
         for (let j = 0; j < this.selection.length; j++) {
-          if (this.dataverses[i].id==this.selection[j]) {
+          if (this.dataverses[i].id === this.selection[j]) {
             selectionNames.push(this.dataverses[i].name);
           }
         }
@@ -146,7 +150,7 @@ export class ReportComponent implements OnInit {
   }
 
   private getTotals(id) {
-    let totals = <any>[];
+    let totals = <any> [];
     // step 1. get the slots for the totals
     for (let j = 0; j < this.csvData[id][0].length; j++) {
       // first create the attribute
@@ -191,18 +195,18 @@ export class ReportComponent implements OnInit {
     // group by dataverse or just the first column
     const maxLength = 18;
     const indexedArray = {};
-    const chartData = <any>[];
+    const chartData = <any> [];
     const selectionNames = this.getSelectionNames();
 
-    if(typeof(this.csvData[id]) === 'undefined') {
+    if (typeof(this.csvData[id]) === 'undefined') {
       return;
     }
 
     const statusSlot = this.csvData[id][0].indexOf('Status');
-    let sizeSlot = this.csvData[id][0].indexOf('Size (KB)');
+    const sizeSlot = this.csvData[id][0].indexOf('Size (KB)');
 
     for (let i = 1; i < this.csvData[id].length - 1; i++) {
-      let row = this.csvData[id][i];
+      const row = this.csvData[id][i];
       if (row[statusSlot] === 'RELEASED') {
         // depending on the selection use either all the top level dataverses or the second level one
         let name = row[0];
@@ -219,18 +223,18 @@ export class ReportComponent implements OnInit {
       }
     }
     // convert the json into a two dimensional array
-    for (let o in indexedArray) {
+    for (const o in indexedArray) {
       // let strip the dataverse part
       let name: any = o;
-      if (name.indexOf(" Dataverse") > -1) {
-        name = name.substring(0, name.indexOf(" Dataverse"))
+      if (name.indexOf(' Dataverse') > -1) {
+        name = name.substring(0, name.indexOf(' Dataverse'));
       }
       if (name.length > maxLength) {
         name = name.substring(0, maxLength) + '...';
       }
       chartData.push([
         name, indexedArray[o][variable]
-      ])
+      ]);
     }
 
     // sort it
@@ -256,7 +260,7 @@ export class ReportComponent implements OnInit {
 
   // parse the feed filtering by selections
   private getTotals2(id, subjectFunc) {
-    const chartData = <any>[];
+    const chartData = <any> [];
     const selectionNames = this.getSelectionNames();
 
     if (typeof(this.csvData[id]) === 'undefined') {
@@ -299,7 +303,7 @@ export class ReportComponent implements OnInit {
     let subjectNew = subject.substring(0, subject.indexOf('/')); // Only difference
     subjectNew = subjectNew.charAt(0).toUpperCase() + subjectNew.slice(1);
     // add a few sub categories
-    for (let l = 0; l < obj.fileTypeLookup.length; l++){
+    for (let l = 0; l < obj.fileTypeLookup.length; l++) {
       if (subject.indexOf(obj.fileTypeLookup[l][0]) > -1) {
         subjectNew = obj.fileTypeLookup[l][1];
       }

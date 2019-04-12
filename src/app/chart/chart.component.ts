@@ -80,7 +80,7 @@ export class ChartComponent implements OnInit, OnChanges {
     this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
     // bar colors
-    this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>[this.chartBarColor, this.chartBarColor]);
+    this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[] > [this.chartBarColor, this.chartBarColor]);
 
     // x & y axis
     this.xAxis = svg.append('g')
@@ -187,12 +187,12 @@ export class ChartComponent implements OnInit, OnChanges {
       .on('mouseleave', function() {
         obj.tooltip.style('display', 'none'); })
       .on('mousemove', function(d) {  // Mouse event
-        let val = Math.round(d[1] * 100) / 100;
+        const val = Math.round(d[1] * 100) / 100;
         obj. tooltip
           .html(
             '<div> Total ' + d[0] + '<br/> ' + val + '</div>');
-        let xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX - (100);
-        let yPosition = d3.event.clientY - 100 + obj.winref.nativeWindow.scrollY;
+        const xPosition = d3.event.clientX + obj.winref.nativeWindow.scrollX - (100);
+        const yPosition = d3.event.clientY - 100 + obj.winref.nativeWindow.scrollY;
         obj.tooltip.style('left', xPosition + 'px')
           .style('top', yPosition + 'px');
       });
