@@ -22,8 +22,8 @@ export class MultiselectComponent implements OnInit {
       const selectionStr = this.selection;
       try {
         const selectionStrArray = selectionStr.split(',');
-        for (let i = 0; i < selectionStrArray.length; i++) {
-          selection.push(Number(selectionStrArray[i]));
+        for (const i of selectionStrArray) {
+          selection.push(Number(i));
         }
       } catch (e) {}
     }
@@ -60,8 +60,8 @@ export class MultiselectComponent implements OnInit {
     // labels
     // strip the names
     const _options = [];
-    for (let i = 0; i < options.length; i++) {
-      const tempObj = Object.assign({}, options[i]);
+    for (const i of options) {
+      const tempObj = Object.assign({}, i);
       tempObj.name = tempObj.name.replace(/['"]+/g, '');
       _options.push(tempObj);
     }

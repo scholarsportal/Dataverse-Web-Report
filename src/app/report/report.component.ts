@@ -77,18 +77,18 @@ export class ReportComponent implements OnInit {
     const allTextLines = csvData.split(/\r\n|\n/);
     const lines = [];
 
-    for (let i = 0; i < allTextLines.length; i++) {
+    for (const i of allTextLines) {
       // split
-      let data = this.CSVtoArray(allTextLines[i]);
+      let data = this.CSVtoArray(i);
       // failsafe
       if (data == null) {
-        data = allTextLines[i].split(',');
+        data = i.split(',');
       }
 
       if (data && typeof (data.length) !== 'undefined') {
         const tarr = [];
-        for (let j = 0; j < data.length; j++) {
-          tarr.push(data[j]);
+        for (const j of data) {
+          tarr.push(j);
         }
         lines.push(tarr);
       }
@@ -246,13 +246,13 @@ export class ReportComponent implements OnInit {
 
     // group matching records and add totals
     const groupedData = [];
-    for (let i = 0; i < chartData.length; i++) {
-      const index = groupedData.findIndex(groupedData => groupedData[0] === chartData[i][0]);
+    for (const i of chartData) {
+      const index = groupedData.findIndex(groupedData => groupedData[0] === i[0]);
 
       if (index === -1) {
-        groupedData.push(chartData[i]);
+        groupedData.push(i);
       } else {
-        groupedData[index][1] += chartData[i][1];
+        groupedData[index][1] += i[1];
       }
     }
     return groupedData;
