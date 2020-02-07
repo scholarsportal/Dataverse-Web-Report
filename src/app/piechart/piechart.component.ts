@@ -1,5 +1,4 @@
-// ref http://www.muller.tech/post/2017/11/13/angular5-d3js-pie-chart/
-// bl.ocks.org/enjalot/1203641
+// https://codepen.io/vlt5/details/NqOvoG
 
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
@@ -21,24 +20,28 @@ export class PiechartComponent implements OnInit, OnChanges {
   hostElement: any;
   svg: any;
   radius: number;
-  innerRadius: number;
-  outerRadius: number;
-  htmlElement: HTMLElement;
   arcGenerator: any;
-  arcHover: any;
-  outerArc: any;
   pieGenerator: any;
   path: any;
   values: Array<number>;
   labels: Array<string>;
-  centralLabel: any;
   pieColours: any;
   slices: Array<any>;
-  selectedSlice: any;
   colourSlices: Array<string>;
   arc: any;
   tooltip: any;
   details: any;
+  canvas: any;
+  art: any;
+  labelsSelection: any;
+  pieData: Array<any>;
+  cDim: any = {
+    height: 600,
+    width: 600,
+    innerRadius: 20,
+    outerRadius: 95,
+    labelRadius: 125
+  };
 
   constructor(
     private elRef: ElementRef,
@@ -63,77 +66,65 @@ export class PiechartComponent implements OnInit, OnChanges {
   createChart = () => {
     // chart configuration
     this.hostElement = this.chartContainer.nativeElement;
-
-    this.radius = Math.min(this.hostElement.offsetWidth, this.hostElement.offsetHeight) / 2 - 80;
-    const innerRadius = this.radius - 10;
-    const outerRadius = this.radius - 50;
-    const hoverRadius = this.radius - 5;
-    this.pieColours = this.colours ? d3.scaleOrdinal().range(this.colours) : d3.scaleOrdinal(d3.schemeCategory20c);
+    this.radius = (Math.min(this.hostElement.offsetWidth, this.hostElement.offsetHeight) / 2) + 80 ;
+    this.cDim.labelRadius = (this.radius / 2 - 10);
+    this.cDim.outerRadius = this.cDim.labelRadius - 30;
+    this.cDim.innerRadius = this.cDim.outerRadius / 4;
+    this.pieColours = this.colours ? d3.scaleOrdinal().range(this.colours) : d3.scaleOrdinal(d3.schemeCategory10);
     this.tooltip = d3.select('body')
       .append('div')
       .attr('class', 'mytooltip')
       .style('display', 'none');
-
-    // create a pie generator and tell it where to get numeric values from and whether sorting is needed or not
-    // this is just a function that will be called to obtain data prior binding that data to elements of the chart
     this.pieGenerator = d3.pie().sort(null).value((d: number) => d)([0, 0, 0]);
-    // create an arc generator and configure it
-    // this is just a function that will be called to obtain data prior binding that data to arc elements of the chart
     this.arcGenerator = d3.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius);
-
-    this.arcHover = d3.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(hoverRadius);
-
-    this.outerArc = d3.arc()
-      .innerRadius(this.radius)
-      .outerRadius(this.radius);
-
-    // create svg element, configure dimensions and centre and add to DOM
+      .innerRadius(this.cDim.innerRadius)
+      .outerRadius(this.cDim.outerRadius);
     this.svg = d3.select(this.hostElement).append('svg')
-      .attr('viewBox', '0, 0, ' + this.hostElement.offsetWidth + ', ' + this.hostElement.offsetHeight)
+      .attr('height', this.cDim.height)
+      .attr('width', this.cDim.width)
+      .attr('viewBox', '0, 0, ' +  this.cDim.width + ', ' +  this.cDim.height)
       .append('g')
-      .attr('transform', `translate(${this.hostElement.offsetWidth / 2}, ${this.hostElement.offsetHeight / 2})`);
-
+      .attr('transform', `translate(${(this.cDim.width / 2) + 50}, ${ this.cDim.height / 2})`);
     this.svg.append('text')
       .attr('x', 0)
-      .attr('y', 0 - (this.hostElement.offsetHeight / 2) + 15)
+      .attr('y', 0 - (this.hostElement.offsetHeight / 2))
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .text(this.details.title);
-
-    this.svg.append('g')
-      .attr('class', 'slices');
-    this.svg.append('g')
-      .attr('class', 'labels');
-    this.svg.append('g')
-      .attr('class', 'lines');
+    this.canvas = this.svg.append('g')
+      .attr('id', 'canvas');
+    this.art = this.canvas.append('g')
+      .attr('id', 'art');
+    this.labelsSelection = this.canvas.append('g')
+      .attr('id', 'labels');
   }
 
   updateChart = (firstRun: boolean) => {
     const obj =  this;
-
     this.slices = this.updateSlices(this.data);
+    this.values = firstRun ? [0, 0, 0] : _.toArray(this.slices).map(slice => slice.amount);
+    this.slices.forEach((d) => {
+      d.pct = this.toPercent(d.amount, new SumPipe().transform(this.values));
+    });
+    this.slices.sort((a, b) => {
+      return b.amount - a.amount;
+    });
     this.labels = this.slices.map(slice => slice.family);
     this.colourSlices = this.slices.map(slice => this.pieColours(slice.family));
-
-    this.values = firstRun ? [0, 0, 0] : _.toArray(this.slices).map(slice => slice.amount);
-
-    this.pieGenerator = d3.pie().sort(null).value((d: number) => d)(this.values);
-
-    const arc = this.svg.selectAll('.arc')
-      .data(this.pieGenerator);
-    arc.exit().remove();
-
-    const arcEnter = arc.enter().append('g')
-      .attr('class', 'arc');
-
-    arcEnter.append('path')
+    this.pieGenerator = d3.pie().value((d: any) => {
+      return d.amount;
+    });
+    this.pieData = this.pieGenerator(this.slices);
+    this.art.selectAll('.wedge')
+      .data(this.pieData)
+      .enter()
+      .append('path')
+      .attr('class', 'wedge')
       .attr('d', this.arcGenerator)
-      .each((values) => firstRun ? values.storedValues = values : null)
-      .on('mouseenter', function(d) {  // Mouse event
+      .style('fill', (d, i) => {
+        return this.pieColours(i);
+      })
+      .on('mouseenter', function() {
         d3.select(this)
           .transition()
           .duration(500)
@@ -143,10 +134,11 @@ export class PiechartComponent implements OnInit, OnChanges {
           .duration(500)
           .style('display', 'block');  // The tooltip appears
       })
-      .on('mouseleave', function() {
-        obj.tooltip.style('display', 'none'); })
-
-      .on('mousemove', function(d) {  // Mouse event
+      .on('mouseleave', () => {
+        obj.tooltip
+          .style('display', 'none');
+      })
+      .on('mousemove', (d) => {
         const slice = obj.slices[d.index];
         obj.tooltip
           .html(
@@ -157,93 +149,97 @@ export class PiechartComponent implements OnInit, OnChanges {
           .style('top', yPosition + 'px');
       });
 
-    // configure a transition to play on d elements of a path
-    // whenever new values are passed in, the values and the previously stored values will be used
-    // to compute the transition using interpolation
-    d3.select(this.hostElement).selectAll('path')
-      .data(this.pieGenerator)
-      .attr('fill', (datum, index) => this.pieColours(this.labels[index]))
-      .attr('d', this.arcGenerator)
-      .transition()
-      .duration(750)
-      .attrTween('d', function(newValues, i) {
-        return obj.arcTween(newValues, i, this);
+    const enteringLabels = this.labelsSelection.selectAll('.label').data(this.pieData).enter();
+    const labelGroups = enteringLabels.append('g').attr('class', 'label');
+    const lines = labelGroups.append('line')
+      .attr('x1', (d, i) => {
+        return this.arcGenerator.centroid(d)[0];
+      })
+      .attr('y1', (d) => {
+        return this.arcGenerator.centroid(d)[1];
+      })
+      .attr('x2', (d) => {
+        const centroid = this.arcGenerator.centroid(d);
+        const midAngle = Math.atan2(centroid[1], centroid[0]);
+        return Math.cos(midAngle) * this.cDim.labelRadius;
+      })
+      .attr('y2', (d) => {
+        const centroid = this.arcGenerator.centroid(d);
+        const midAngle = Math.atan2(centroid[1], centroid[0]);
+        return Math.sin(midAngle) * this.cDim.labelRadius;
+      })
+      .attr('class', 'label-line')
+      .attr('stroke', (d, i) => {
+        return this.pieColours(i);
       });
 
-    // labels position
-    const text = this.svg.select('.labels').selectAll('text')
-      .data(this.pieGenerator, function(d) {
-        return d.family;
+    const textLabels = labelGroups.append('text').attr('x', (d, i) => {
+      const centroid = this.arcGenerator.centroid(d);
+      const midAngle = Math.atan2(centroid[1], centroid[0]);
+      const x = Math.cos(midAngle) * this.cDim.labelRadius;
+      const sign = x > 0 ? 1 : -1;
+      return x + (5 * sign);
+    }).attr('y', (d, i) => {
+      const centroid = this.arcGenerator.centroid(d);
+      const midAngle = Math.atan2(centroid[1], centroid[0]);
+      const y = Math.sin(midAngle) * this.cDim.labelRadius;
+      return y;
+    }).attr('text-anchor', (d, i) => {
+      const centroid = this.arcGenerator.centroid(d);
+      const midAngle = Math.atan2(centroid[1], centroid[0]);
+      const x = Math.cos(midAngle) * this.cDim.labelRadius;
+      return x > 0 ? 'start' : 'end';
+    }).attr('class', 'label-text')
+      .text((d) => {
+        return d.data.family + ' ( ' + d.data.pct + ' ) ';
       });
 
-    // label text
-    text.enter()
-      .append('text')
-      .attr('dy', '.35em')
-      .text(function(d) {
-        return obj.labels[d.index] + ' ' + obj.toPercent(obj.values[d.index], new SumPipe().transform(obj.values));
+    const alpha = 0.5;
+    const spacing = 15;
+
+    function relax() {
+      let again = false;
+      textLabels.each(function(d, i) {
+        const a = this;
+        const da = d3.select(a);
+        const y1: any = da.attr('y');
+        textLabels.each(function(d, j) {
+          const b = this;
+          if (a === b) {
+            return ;
+          }
+
+          const db = d3.select(b);
+          if (da.attr('text-anchor') !== db.attr('text-anchor')) {
+            return ;
+          }
+
+          const y2: any = db.attr('y');
+          const deltaY: any = y1 - y2;
+
+          if (Math.abs(deltaY) > spacing) {
+            return ;
+          }
+
+          again = true;
+          const sign = deltaY > 0 ? 1 : -1;
+          const adjust = sign * alpha;
+          da.attr('y', +y1 + adjust);
+          db.attr('y', +y2 - adjust);
+        });
       });
-    function midAngle(d) {
-      return d.startAngle + (d.endAngle - d.startAngle) / 2;
+
+      if (again) {
+        const labelElements = textLabels._groups[0];
+        lines.attr('y2', (d, i) => {
+          const labelForLine = d3.select(labelElements[i]);
+          return labelForLine.attr('y');
+        });
+        setTimeout(relax, 20);
+      }
     }
 
-    this.svg.select('.labels').selectAll('text').transition().duration(1000)
-      .attrTween('transform', function(d) {
-        this._current = this._current || d;
-        const interpolate = d3.interpolate(this._current, d);
-        this._current = interpolate(0);
-        return function(t) {
-          const d2 = interpolate(t);
-          const pos = obj.outerArc.centroid(d2);
-          pos[0] = obj.radius * (midAngle(d2) < Math.PI ? 1 : -1);
-          return 'translate(' + pos + ')';
-        };
-      })
-      .styleTween('text-anchor', function(d) {
-        this._current = this._current || d;
-        const interpolate = d3.interpolate(this._current, d);
-        this._current = interpolate(0);
-        return function(t) {
-          const d2 = interpolate(t);
-          return midAngle(d2) < Math.PI ? 'start' : 'end';
-        };
-      });
-
-    text.exit()
-      .remove();
-
-    const polyline = this.svg.select('.lines').selectAll('polyline')
-      .data(this.pieGenerator, function(d) {
-        return d.family;
-      });
-
-    polyline.enter()
-      .append('polyline');
-
-    this.svg.select('.lines').selectAll('polyline').transition().duration(1000)
-      .attrTween('points', function(d) {
-        this._current = this._current || d;
-        const interpolate = d3.interpolate(this._current, d);
-        this._current = interpolate(0);
-        return function(t) {
-          const d2 = interpolate(t);
-          const pos = obj.outerArc.centroid(d2);
-          pos[0] = obj.radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-          return [obj.arcGenerator.centroid(d2), obj.outerArc.centroid(d2), pos];
-        };
-      });
-
-    polyline.exit()
-      .remove();
-  }
-
-  arcTween(newValues, i, slice) {
-    const interpolation = d3.interpolate(slice.storedValues, newValues);
-    slice.storedValues = interpolation(0);
-
-    return (t) => {
-      return this.arcGenerator(interpolation(t));
-    };
+    relax();
   }
 
   toPercent = (a: number, b: number): string => {
@@ -256,7 +252,7 @@ export class PiechartComponent implements OnInit, OnChanges {
 
     Object.keys(queriesByFamilyTypes).map((family) => {
       results.push({
-        family: family,
+        family,
         amount: queriesByFamilyTypes[family].length,
         types: []
       });

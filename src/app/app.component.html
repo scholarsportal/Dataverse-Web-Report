@@ -19,9 +19,11 @@
     <app-chart *ngIf="chartData2" [data]="chartData2" chartTitle="{{chartTitle2}}" chartLabelX="" chartLabelY="Size (GB)" chartBarColor="#756bb1"></app-chart>
   <div class="row">
     <div class="block"><app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chartTitle="File Types"></app-piechart></div>
+  </div>
+<br><br>
+  <div class="row">
     <div class="block"><app-piechart *ngIf="pieChartData" [data]="pieChartData" chartTitle="Subject Categories"></app-piechart></div>
   </div>
-
   <app-report
     (parentChangeDateRange)="updateDateRange($event)"
     (parentCreateChart)="createChart($event)"
