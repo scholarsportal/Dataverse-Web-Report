@@ -36,16 +36,16 @@ $grey-lighter: #f6f6f6;
     width: 600px !important;
     height: 400px !important;
 
-    /deep/ path {
+    ::ng-deep path {
         stroke: #fff;
         stroke-width: 2;
     }
 
-    /deep/ .label {
+    ::ng-deep .label {
         font-size: 1.2em;
     }
 
-    /deep/ .percent {
+  ::ng-deep .percent {
         font-size: 2em;
     }
 }

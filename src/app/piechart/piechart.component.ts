@@ -13,7 +13,7 @@ import { WindowRefService } from '../window-ref.service';
 })
 
 export class PiechartComponent implements OnInit, OnChanges {
-  @ViewChild('containerPieChart') chartContainer: ElementRef;
+  @ViewChild('containerPieChart', { static: true }) chartContainer: ElementRef;
   @Input() data: any = [];
   @Input() chartTitle: string;
   @Input() colours: Array<string>;

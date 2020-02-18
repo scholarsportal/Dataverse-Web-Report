@@ -9,7 +9,7 @@ import { WindowRefService } from '../window-ref.service';
   encapsulation: ViewEncapsulation.None
 })
 export class ChartComponent implements OnInit, OnChanges {
-  @ViewChild('chart') private chartContainer: ElementRef;
+  @ViewChild('chart', { static: true }) private chartContainer: ElementRef;
   @Input() private data: Array<any>;
   @Input() chartTitle: string;
   @Input() chartLabelX: string;

@@ -19,8 +19,8 @@ export class AppComponent implements OnInit {
   chartTitle2 = '';
   chartTitle1 = '';
 
-  @ViewChild(ReportComponent) reportComponent: ReportComponent;
-  @ViewChild(MultiselectComponent) multiselectComponent: MultiselectComponent;
+  @ViewChild(ReportComponent, { static: true }) reportComponent: ReportComponent;
+  @ViewChild(MultiselectComponent, { static: true }) multiselectComponent: MultiselectComponent;
 
   constructor() {
     this.selection = this.getParameterByName('selection');
