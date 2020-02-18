@@ -20,7 +20,6 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "angular-2-dropdown-multiselect": "^1.6.3",
-    "angular-font-awesome": "^3.1.2",
     "bootstrap": "^4.3.1",
     "bootstrap-select": "^1.12.4",
     "d3": "^4.12.2",

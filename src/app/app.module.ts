@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms'; // required for ngModel
 import { MultiselectDropdownModule } from 'angular-2-dropdown-multiselect';
-import { AngularFontAwesomeModule } from 'angular-font-awesome';
-
 import { AppComponent } from './app.component';
 import { ReportComponent } from './report/report.component';
 import { ChartComponent } from './chart/chart.component';
@@ -27,8 +25,7 @@ import { WindowRefService } from './window-ref.service';
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    MultiselectDropdownModule,
-    AngularFontAwesomeModule
+    MultiselectDropdownModule
   ],
   providers: [WindowRefService],
   bootstrap: [AppComponent]
