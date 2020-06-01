@@ -44,6 +44,24 @@ text {
   float: right;
 }
 
+button{
+  margin: 5px;
+}
+
+.historical{
+  margin: 5px;
+  font-size: 16px;
+  max-width: 500px;
+}
+
+.list-group-item{
+  padding: 0.5rem;
+}
+
+.block{
+  padding-bottom: 15px;
+}
+
 .mytooltip {
   position: absolute;
   text-align: center;

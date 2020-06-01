@@ -1,6 +1,9 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import {Component, OnInit, Input, ViewChild, AfterViewInit} from '@angular/core';
 import { ReportComponent } from './report/report.component';
 import { MultiselectComponent } from './multiselect/multiselect.component';
+import { MetricsService } from './metrics.service';
+import { environment } from './../environments/environment';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,11 +21,18 @@ export class AppComponent implements OnInit {
   // dynamically update the chart title depending on the number of bars
   chartTitle2 = '';
   chartTitle1 = '';
+  show = true;
+  private reports: any = [];
+  private listUrl;
+  private reportUrl;
+  private listEndpoint = '/api/metrics/list';
+  private reportEndpoint = '/api/metrics/report';
 
-  @ViewChild(ReportComponent, { static: true }) reportComponent: ReportComponent;
-  @ViewChild(MultiselectComponent, { static: true }) multiselectComponent: MultiselectComponent;
 
-  constructor() {
+  @ViewChild(ReportComponent, { static: false }) reportComponent: ReportComponent;
+  @ViewChild(MultiselectComponent, { static: false }) multiselectComponent: MultiselectComponent;
+
+  constructor(private metrics: MetricsService) {
     this.selection = this.getParameterByName('selection');
   }
 
@@ -37,6 +47,17 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.listUrl = environment.apiUrl + this.listEndpoint;
+    this.reportUrl = environment.apiUrl + this.reportEndpoint;
+    this.listReports();
+  }
+
+  listReports() {
+    this.metrics.getReportsList().subscribe((data: any[]) => {
+      data.forEach((datum) => {
+        this.reports.push({name: datum, url: this.reportUrl + '?date=' + datum});
+      });
+    });
   }
 
   createChart(data) {
@@ -76,7 +97,9 @@ export class AppComponent implements OnInit {
   }
 
   createDropdown(options) {
-    this.multiselectComponent.createMultiselectComponent(options);
+    setTimeout(() => {
+      this.multiselectComponent.createMultiselectComponent(options);
+    });
   }
 
   updateCharts(selection) {

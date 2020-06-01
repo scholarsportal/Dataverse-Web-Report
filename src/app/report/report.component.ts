@@ -1,5 +1,6 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {MetricsService} from '../metrics.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ export class ReportComponent implements OnInit {
   @Output() parentCreatePieChart2: EventEmitter<any> = new EventEmitter<any>();
   @Output() parentChangeDateRange: EventEmitter<any> = new EventEmitter<string>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private metrics: MetricsService) { }
   dataverses: {id: number, name: string}[];
   csvData: any[] = [];
   selection: any[] = [];
@@ -29,16 +30,20 @@ export class ReportComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.dataverses = [];
-    // the following loads multiple csv files and processes them to be used in chart generation
-    this.loadCSV('assets/Downloads_by_Dataverse.csv', 0, this.parseFeed);
-    this.loadCSV('assets/Downloads_by_Dataset.csv', 1, this.parseFeed1);
-    this.loadCSV('assets/Subjects.csv', 2, this.parseFeed2);
-    this.loadCSV('assets/File_Types.csv', 3, this.parseFeed3);
+    this.listMetrics();
   }
 
-  loadCSV(fileName, id, func) {
-    this.http.get(fileName, {responseType: 'text'})
+  listMetrics() {
+    this.dataverses = [];
+    // the following loads multiple csv files and processes them to be used in chart generation
+    this.loadCSV('Downloads_by_Dataverse.csv', 0, this.parseFeed);
+    this.loadCSV('Downloads_by_Dataset.csv', 1, this.parseFeed1);
+    this.loadCSV('Subjects.csv', 2, this.parseFeed2);
+    this.loadCSV('File_Types.csv', 3, this.parseFeed3);
+  }
+
+  loadCSV(filename, id, func) {
+    this.metrics.getReport(filename)
       .subscribe(
         data => this.extractData(data, id),
         error => console.log(error),
@@ -150,11 +155,11 @@ export class ReportComponent implements OnInit {
   }
 
   private getTotals(id) {
-    let totals = <any> [];
+    let totals = <any>[];
     // step 1. get the slots for the totals
     for (let j = 0; j < this.csvData[id][0].length; j++) {
       // first create the attribute
-      if (typeof(totals[j]) === 'undefined') {
+      if (typeof (totals[j]) === 'undefined') {
         totals.push(0);
       }
     }
@@ -181,7 +186,7 @@ export class ReportComponent implements OnInit {
       // get the range
       if (i === start) {
         this.dateRange = this.csvData[id][0][i];
-      } else if (i === totals.length - 3 ) { // omit the last 2 header cols containing totals
+      } else if (i === totals.length - 3) { // omit the last 2 header cols containing totals
         this.dateRange += ' to ' + this.csvData[id][0][i];
         this.parentChangeDateRange.emit(this.dateRange);
       }
@@ -198,7 +203,7 @@ export class ReportComponent implements OnInit {
     const chartData = <any> [];
     const selectionNames = this.getSelectionNames();
 
-    if (typeof(this.csvData[id]) === 'undefined') {
+    if (typeof (this.csvData[id]) === 'undefined') {
       return;
     }
 
@@ -210,11 +215,11 @@ export class ReportComponent implements OnInit {
       if (row[statusSlot] === 'RELEASED') {
         // depending on the selection use either all the top level dataverses or the second level one
         let name = row[0];
-        if (selectionNames.indexOf(name) > -1 || selectionNames.length === 0  ) {
+        if (selectionNames.indexOf(name) > -1 || selectionNames.length === 0) {
           if (selectionNames.length > 0) {
             name = row[1];
           }
-          if (typeof(indexedArray[name]) === 'undefined') {
+          if (typeof (indexedArray[name]) === 'undefined') {
             indexedArray[name] = {count: 0, size: 0};
           }
           indexedArray[name].count += 1;
@@ -238,7 +243,7 @@ export class ReportComponent implements OnInit {
     }
 
     // sort it
-    chartData.sort(function(a, b) {
+    chartData.sort(function (a, b) {
       a = a[1];
       b = b[1];
       return a > b ? -1 : (a < b ? 1 : 0);
@@ -260,10 +265,10 @@ export class ReportComponent implements OnInit {
 
   // parse the feed filtering by selections
   private getTotals2(id, subjectFunc) {
-    const chartData = <any> [];
+    const chartData = <any>[];
     const selectionNames = this.getSelectionNames();
 
-    if (typeof(this.csvData[id]) === 'undefined') {
+    if (typeof (this.csvData[id]) === 'undefined') {
       return;
     }
 

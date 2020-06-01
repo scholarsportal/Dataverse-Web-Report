@@ -1,36 +1,67 @@
 <div class="container">
-    <h1>
-      {{ title }}
-      <span class="smaller">{{ dateRange }}</span><br/>
+  <h1>
+    {{ title }}
+    <span *ngIf="show" class="smaller">
+        <span class="smaller">{{ dateRange }}</span><br/>
+        <button class="btn btn-primary" (click)="show = !show">Previous Months</button>
+        <a href="{{reportUrl}}" download><button type="submit" class="btn btn-primary">Download</button></a>
+      </span>
+    <span *ngIf="!show">
+        <span class="smaller">
+          <button class="btn btn-primary" (click)="show = !show">Return to Dashboard</button>
+        </span>
+      </span>
+  </h1>
+  <span *ngIf="!show" class="historical">
+      <h2>
+        Historical Dataverse Usage Reports
+      </h2>
 
-      <span class="smaller">
-        <a href="assets/Dataverse Usage Report.xlsx" download><button type="submit" class="btn btn-primary">Download</button></a>
+      <span class="block">
+        To download historical usage data for Dataverse, click the time period below to download as spreadhsheet.
       </span>
 
-    </h1>
-  <div class="row">
-    <div class="col-sm-4">
-      <app-multiselect (parentUpdateCharts)="updateCharts($event)" selection="{{selection}}"></app-multiselect>
-    </div>
-  </div>
-  <app-chart *ngIf="chartData" [data]="chartData" chartTitle="Dataverse Downloads By Month" chartLabelX="Month" chartLabelY="Downloads" chartBarColor="#31a354"></app-chart>
-    <app-chart *ngIf="chartData1" [data]="chartData1" chartTitle="{{chartTitle1}}" chartLabelX="" chartLabelY="Count" chartBarColor="#3182BD"></app-chart>
+      <ul *ngFor="let report of reports" class="list-group list-group-flush historical">
+          <li class="list-group-item">
+            <a href="{{report.url}}">
+              {{ report.name }}
+            </a>
+          </li>
+      </ul>
+    </span>
 
-    <app-chart *ngIf="chartData2" [data]="chartData2" chartTitle="{{chartTitle2}}" chartLabelX="" chartLabelY="Size (GB)" chartBarColor="#756bb1"></app-chart>
-  <div class="row">
-    <div class="block"><app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chartTitle="File Types"></app-piechart></div>
+  <div *ngIf="show">
+    <div class="row">
+      <div class="col-sm-4">
+        <app-multiselect (parentUpdateCharts)="updateCharts($event)" selection="{{selection}}"></app-multiselect>
+      </div>
+    </div>
+    <app-chart *ngIf="chartData" [data]="chartData" chartTitle="Dataverse Downloads By Month" chartLabelX="Month"
+               chartLabelY="Downloads" chartBarColor="#31a354"></app-chart>
+    <app-chart *ngIf="chartData1" [data]="chartData1" chartTitle="{{chartTitle1}}" chartLabelX="" chartLabelY="Count"
+               chartBarColor="#3182BD"></app-chart>
+
+    <app-chart *ngIf="chartData2" [data]="chartData2" chartTitle="{{chartTitle2}}" chartLabelX=""
+               chartLabelY="Size (GB)" chartBarColor="#756bb1"></app-chart>
+    <div class="row">
+      <div class="block">
+        <app-piechart *ngIf="pieChartData2" [data]="pieChartData2" chartTitle="File Types"></app-piechart>
+      </div>
+    </div>
+    <br><br>
+    <div class="row">
+      <div class="block">
+        <app-piechart *ngIf="pieChartData" [data]="pieChartData" chartTitle="Subject Categories"></app-piechart>
+      </div>
+    </div>
+    <app-report
+      (parentChangeDateRange)="updateDateRange($event)"
+      (parentCreateChart)="createChart($event)"
+      (parentCreateChart1)="createChart1($event)"
+      (parentCreateChart2)="createChart2($event)"
+      (parentCreatePieChart)="createPieChart($event)"
+      (parentCreatePieChart2)="createPieChart2($event)"
+      (parentCreateDropdown)="createDropdown($event)"
+    ></app-report>
   </div>
-<br><br>
-  <div class="row">
-    <div class="block"><app-piechart *ngIf="pieChartData" [data]="pieChartData" chartTitle="Subject Categories"></app-piechart></div>
-  </div>
-  <app-report
-    (parentChangeDateRange)="updateDateRange($event)"
-    (parentCreateChart)="createChart($event)"
-    (parentCreateChart1)="createChart1($event)"
-    (parentCreateChart2)="createChart2($event)"
-    (parentCreatePieChart)="createPieChart($event)"
-    (parentCreatePieChart2)="createPieChart2($event)"
-    (parentCreateDropdown)="createDropdown($event)"
-  ></app-report>
-  </div>
+</div>
