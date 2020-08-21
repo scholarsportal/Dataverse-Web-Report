@@ -2,7 +2,11 @@ import {Component, OnInit, Input, ViewChild, AfterViewInit} from '@angular/core'
 import { ReportComponent } from './report/report.component';
 import { MultiselectComponent } from './multiselect/multiselect.component';
 import { MetricsService } from './metrics.service';
+import { MatomoInjector } from 'ngx-matomo';
+import { ConfigService } from './config.service';
 import { environment } from './../environments/environment';
+
+
 
 @Component({
   selector: 'app-root',
@@ -31,8 +35,10 @@ export class AppComponent implements OnInit {
 
   @ViewChild(ReportComponent, { static: false }) reportComponent: ReportComponent;
   @ViewChild(MultiselectComponent, { static: false }) multiselectComponent: MultiselectComponent;
-
-  constructor(private metrics: MetricsService) {
+  constructor(private metrics: MetricsService,
+              private config: ConfigService,
+              private matomoInjector: MatomoInjector) {
+    this.matomoInjector.init(this.config.baseUrl, this.config.id);
     this.selection = this.getParameterByName('selection');
   }
 
