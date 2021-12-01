@@ -14,7 +14,7 @@ import { environment } from './../environments/environment';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Dataverse Report';
+  title = 'Dataverse Metrics Report';
   dateRange: string;
   selection: any = [];
   chartData: Array<any>;
@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
   }
 
   createChart1(data) {
-    this.chartTitle1 = 'Number of Datasets by Dataverse';
+    this.chartTitle1 = 'Number of Datasets by Dataverse Collection';
     if (typeof(data) !== 'undefined' && data.length > 15) {
       this.chartData1 = data.slice(0, 15);
       this.chartTitle1 += ' (Top 15)';
@@ -81,7 +81,7 @@ export class AppComponent implements OnInit {
   }
   createChart2(data) {
     // restrict to top 15
-    this.chartTitle2 = 'Size of Dataverses';
+    this.chartTitle2 = 'Size of Dataverse Collections';
     if (typeof(data) !== 'undefined' && data.length > 15 ) {
       this.chartData2 = data.slice(0 , 15);
       this.chartTitle2 += ' (Top 15)';

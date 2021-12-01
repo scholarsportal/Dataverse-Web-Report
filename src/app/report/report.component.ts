@@ -212,7 +212,7 @@ export class ReportComponent implements OnInit {
 
     for (let i = 1; i < this.csvData[id].length - 1; i++) {
       const row = this.csvData[id][i];
-      if (row[statusSlot] === 'RELEASED') {
+      if ((row[statusSlot] === 'RELEASED') || (row[statusSlot] === 'DRAFT')) {
         // depending on the selection use either all the top level dataverses or the second level one
         let name = row[0];
         if (selectionNames.indexOf(name) > -1 || selectionNames.length === 0) {
@@ -284,7 +284,7 @@ export class ReportComponent implements OnInit {
 
     for (let i = 1; i < this.csvData[id].length - 1; i++) {
       const row = this.csvData[id][i];
-      if (row[statusSlot] === 'RELEASED') {
+      if ((row[statusSlot] === 'RELEASED') || (row[statusSlot] === 'DRAFT')) {
         if (selectionNames.indexOf(row[0]) > -1 || selectionNames.length === 0) {
           let k = -1;
           for (let j = subStart; j < subEnd - 1; j++) {

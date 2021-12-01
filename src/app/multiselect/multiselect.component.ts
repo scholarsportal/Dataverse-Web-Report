@@ -51,7 +51,7 @@ export class MultiselectComponent implements OnInit {
       searchPlaceholder: 'Find',
       searchEmptyResult: 'Nothing found...',
       searchNoRenderText: 'Type in search box to see results...',
-      defaultTitle: 'Select Dataverse',
+      defaultTitle: 'Select Dataverse Collection',
       allSelected: 'All selected',
     };
   }
