@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://dataverse.scholarsportal.info/metricsbackend'
+  apiUrl: 'https://borealisdata.ca/metricsbackend'
 };
