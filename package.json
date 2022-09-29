@@ -22,7 +22,7 @@
     "angular-2-dropdown-multiselect": "^1.9.0",
     "bootstrap": "^4.3.1",
     "bootstrap-select": "^1.12.4",
-    "d3": "^4.12.2",
+    "d3": "^7.6.1",
     "font-awesome": "^4.7.0",
     "ngx-matomo": "^0.1.4",
     "rxjs": "~6.5.4",
