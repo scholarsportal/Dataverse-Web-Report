@@ -14,7 +14,7 @@ import { environment } from './../environments/environment';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Dataverse Metrics Report';
+  title = 'Borealis Metrics Report';
   dateRange: string;
   selection: any = [];
   chartData: Array<any>;
